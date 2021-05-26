@@ -6,14 +6,14 @@
 #define TOKENS 8
 
 enum type {
-	_in,_out,_int,_float,_bool,_string,_endline,_comment
+	_inp,_out,_int,_float,_bool,_string,_endline,_comment
 };
 
 struct ref {
 	std::vector<std::string> ref;
 } int_,float_,bool_,string_;
 
-std::string tokens[TOKENS] = { "in","out","int","float","bool","string","endline","//" };
+std::string tokens[TOKENS] = { "inp","out","int","float","bool","string","endline","//" };
 std::string out;
 std::string fileName;
 
@@ -21,6 +21,26 @@ std::vector<int> intReg;
 std::vector<float> floatReg;
 std::vector<bool> boolReg;
 std::vector<std::string> strReg;
+
+bool isNum(std::string a) {
+	int checkDigit = 0;
+	bool allowedPeriod = true;
+	for (int i = 0; i < a.length(); ++i) {
+		if (isdigit(a[i])) {
+			++checkDigit;
+		}
+		if (a[i] == char(46) && allowedPeriod) {
+			++checkDigit;
+			allowedPeriod = false;
+		}
+	}
+	if (checkDigit == a.length()) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
 int main() {
 	std::cout << "Enter the name of the .SEAL file you would like to run: ";
@@ -39,18 +59,59 @@ int main() {
 			}
 			if (checkChar == tokens[i].length()) {
 				switch (i) {
-				case _in:
+				case _inp:
 					if (out[lineCol + 1] == char(32)) {
-
-					}
-					break;
-				case _out:
-					if (out[lineCol + 1] == char(32)) {
+						std::string varName;
 						for (int c = lineCol + 2; c < out.length(); ++c) {
 							if (out[c] == char(59)) {
 								break;
 							}
-							std::cout << out[c];
+							varName += out[c];
+						}
+						for (int v = 0; v < int_.ref.size(); ++v) {
+							if (int_.ref[v] == varName) {
+								int input = 0;
+								std::cin >> input;
+								intReg.at(v) = int(input);
+							}
+						}
+						for (int v = 0; v < float_.ref.size(); ++v) {
+							if (float_.ref[v] == varName) {
+								float input = 0;
+								std::cin >> input;
+								floatReg.at(v) = float(input);
+							}
+						}
+					}
+					break;
+				case _out:
+					if (out[lineCol + 1] == char(32)) {
+						std::string outStr;
+						for (int c = lineCol + 2; c < out.length(); ++c) {
+							if (out[c] == char(59)) {
+								break;
+							}
+							outStr += out[c];
+						}
+						if (isNum(outStr)) {
+							for (int c = lineCol + 2; c < out.length(); ++c) {
+								if (out[c] == char(59)) {
+									break;
+								}
+								std::cout << out[c];
+							}
+						}
+						else {
+							for (int v = 0; v < int_.ref.size(); ++v) {
+								if (int_.ref[v] == outStr) {
+									std::cout << intReg[v];
+								}
+							}
+							for (int v = 0; v < float_.ref.size(); ++v) {
+								if (float_.ref[v] == outStr) {
+									std::cout << floatReg[v];
+								}
+							}
 						}
 					}
 					break;
@@ -84,7 +145,6 @@ int main() {
 								intReg.push_back(std::stoi(varVal));
 							}
 						}
-						std::cout << intReg[0];
 					}
 					break;
 				case _float:
@@ -117,7 +177,6 @@ int main() {
 								floatReg.push_back(std::stof(varVal));
 							}
 						}
-						std::cout << floatReg[0];
 					}
 					break;
 				case _endline:
