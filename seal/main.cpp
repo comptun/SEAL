@@ -6,14 +6,14 @@
 #define TOKENS 8
 
 enum type {
-	_inp,_out,_int,_float,_bool,_string,_endline,_comment
+	_input,_output,_int,_float,_bool,_string,_endline,_comment
 };
 
 struct ref {
 	std::vector<std::string> ref;
 } int_,float_,bool_,string_;
 
-std::string tokens[TOKENS] = { "inp","out","int","float","bool","string","endline","//" };
+std::string tokens[TOKENS] = { "input","output","int","float","bool","string","endline","//" };
 std::string out;
 std::string fileName;
 
@@ -68,7 +68,7 @@ int main() {
 			}
 			if (checkChar == tokens[i].length()) {
 				switch (i) {
-				case _inp:
+				case _input:
 					if (out[lineCol + 1] == char(32)) {
 						std::string varName;
 						for (int c = lineCol + 2; c < out.length(); ++c) {
@@ -107,7 +107,7 @@ int main() {
 						}
 					}
 					break;
-				case _out:
+				case _output:
 					if (out[lineCol + 1] == char(32)) {
 						std::string outStr;
 						for (int c = lineCol + 2; c < out.length(); ++c) {
